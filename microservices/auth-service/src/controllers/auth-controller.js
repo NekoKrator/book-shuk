@@ -28,8 +28,8 @@ class AuthController {
             if (!user || !(await bcrypt.compare(password, user.password))) {
                 return res.status(400).json({ message: 'Invalid email or password' })
             }
-            const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY)
-            res.status(200).json({ token })
+            const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET_KEY)
+            res.status(200).json({ token, username: user.username })
         } catch (error) {
             next(error)
         }
