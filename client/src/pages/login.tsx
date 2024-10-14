@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react'
 import { observer } from 'mobx-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { authStore } from '../context/auth-context'
+import { authState } from '../context/auth-context'
 
 interface LoginData {
     email: string
@@ -25,7 +25,7 @@ const Login: React.FC = observer(() => {
             const response = await axios.post('/auth/login', { email, password })
             const { token, username } = response.data
 
-            authStore.login({ token, username })
+            authState.login({ token, username })
             setData({ email: '', password: '' })
             navigate('/')
         } catch (error) {
@@ -46,6 +46,7 @@ const Login: React.FC = observer(() => {
                 <input type="password" placeholder="Введите пароль" value={data.password} onChange={(e) => setData({ ...data, password: e.target.value })} />
                 <button type="submit">Войти</button>
             </form>
+            <button onClick={() => navigate('/register')}>Sign Up</button>
         </div>
     )
 })

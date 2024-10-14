@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 
-class AuthStore {
+class AuthState {
     user: { username: string; token: string } | null = null
 
     constructor() {
@@ -14,12 +14,6 @@ class AuthStore {
         this.user = { username: credentials.username, token: credentials.token }
     }
 
-    logout() {
-        localStorage.removeItem('token')
-        localStorage.removeItem('username')
-        this.user = null
-    }
-
     private loadUserFromLocalStorage() {
         const token = localStorage.getItem('token')
         const username = localStorage.getItem('username')
@@ -29,4 +23,4 @@ class AuthStore {
     }
 }
 
-export const authStore = new AuthStore()
+export const authState = new AuthState()

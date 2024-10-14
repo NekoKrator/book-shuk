@@ -1,16 +1,21 @@
 import { observer } from 'mobx-react'
-import { authStore } from '../context/auth-context'
+import { authState } from '../context/auth-context'
+import { useNavigate } from 'react-router-dom'
 
 const Home: React.FC = observer(() => {
     // Проверяем, вошел ли пользователь
-    const user = authStore.user
+    const user = authState.user
+    const navigate = useNavigate()
 
     return (
         <div>
             {user ? (
-                <h1>Добро пожаловать, {user.username}!</h1> // Отображение имени пользователя
+                <h1>Welcome, {user.username}!</h1> // Отображение имени пользователя
             ) : (
-                <h1>Пожалуйста, войдите в систему</h1>
+                <div>
+                    <h1>Please Log In</h1>
+                    <button onClick={() => navigate('/register')}>Sign Up</button>
+                </div>
             )}
             {/* Здесь можно добавить дополнительный контент */}
         </div>
