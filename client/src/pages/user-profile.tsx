@@ -3,12 +3,15 @@ import { observer } from 'mobx-react'
 import { userState } from '../context/user-context'
 import { useParams } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
+import { useNavigate } from 'react-router-dom'
+import BookSearch from '../components/books/book-search'
 
 interface DecodedToken {
     username: string
 }
 
 const UserProfile: React.FC = observer(() => {
+    const navigate = useNavigate()
     const { username } = useParams<{ username: string }>()
     const token = localStorage.getItem('token')
     let loggedInUsername: string | null = null
@@ -20,6 +23,11 @@ const UserProfile: React.FC = observer(() => {
         } catch (error) {
             console.error('Ошибка декодирования токена', error)
         }
+    }
+
+    const handleLogout = () => {
+        userState.logout()
+        navigate('/login')
     }
 
     useEffect(() => {
@@ -47,7 +55,16 @@ const UserProfile: React.FC = observer(() => {
             <h1>{userState.user.username}</h1>
             <p>Email: {userState.user.email}</p>
 
-            {isCurrentUser && <button onClick={() => userState.logout()}>Вийти</button>}
+            {isCurrentUser && (
+                <div>
+                    <button onClick={() => userState.logout()}>Log Out</button>
+                    <button onClick={handleLogout}>Go to Home</button>
+                    <div>
+                        <h1>Add a New Book</h1>
+                        <BookSearch />
+                    </div>
+                </div>
+            )}
         </div>
     )
 })

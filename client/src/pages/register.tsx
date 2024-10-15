@@ -14,7 +14,6 @@ function Register() {
     const registerUser = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const { email, username, password } = data
-        console.log(data)
         try {
             await axios.post('/auth/register', {
                 email,

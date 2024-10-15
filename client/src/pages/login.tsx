@@ -20,7 +20,6 @@ const Login: React.FC = observer(() => {
     const loginUser = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const { email, password } = data
-
         try {
             const response = await axios.post('/auth/login', { email, password })
             const { token, username } = response.data
@@ -41,9 +40,9 @@ const Login: React.FC = observer(() => {
         <div>
             <form onSubmit={loginUser}>
                 <label>Email</label>
-                <input type="email" placeholder="Введите email" value={data.email} onChange={(e) => setData({ ...data, email: e.target.value })} />
+                <input type="email" placeholder="enter email" value={data.email} onChange={(e) => setData({ ...data, email: e.target.value })} />
                 <label>Password</label>
-                <input type="password" placeholder="Введите пароль" value={data.password} onChange={(e) => setData({ ...data, password: e.target.value })} />
+                <input type="password" placeholder="enter password" value={data.password} onChange={(e) => setData({ ...data, password: e.target.value })} />
                 <button type="submit">Войти</button>
             </form>
             <button onClick={() => navigate('/register')}>Sign Up</button>
