@@ -1,43 +1,34 @@
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import { userState } from '../context/user-context'
-import { useParams } from 'react-router-dom'
-import { jwtDecode } from 'jwt-decode'
-import { useNavigate } from 'react-router-dom'
+import { authState } from '../context/auth-context'
+import { useParams, useNavigate } from 'react-router-dom'
 import BookSearch from '../components/books/book-search'
-
-interface DecodedToken {
-    username: string
-}
+import BookList from '../components/books/book-list'
 
 const UserProfile: React.FC = observer(() => {
     const navigate = useNavigate()
     const { username } = useParams<{ username: string }>()
-    const token = localStorage.getItem('token')
-    let loggedInUsername: string | null = null
-
-    if (token) {
-        try {
-            const decodedToken = jwtDecode<DecodedToken>(token)
-            loggedInUsername = decodedToken.username
-        } catch (error) {
-            console.error('Ошибка декодирования токена', error)
-        }
-    }
+    const loggedInUser = userState.loggedInUser
+    const isCurrentUser = loggedInUser?.username === username
 
     const handleLogout = () => {
-        userState.logout()
+        authState.logout()
         navigate('/login')
     }
 
     useEffect(() => {
+        console.log(userState.user)
+    })
+
+    useEffect(() => {
         if (username) {
-            userState.fetchUserByUsername(username)
+            userState.loadUser(username)
         }
     }, [username])
 
     if (userState.loading) {
-        return <div>Завантаження...</div>
+        return <div>Loading...</div>
     }
 
     if (userState.error) {
@@ -45,10 +36,8 @@ const UserProfile: React.FC = observer(() => {
     }
 
     if (!userState.user) {
-        return <div>Користувач не знайдений</div>
+        return <div>User not found</div>
     }
-
-    const isCurrentUser = loggedInUsername === username
 
     return (
         <div>
@@ -57,14 +46,15 @@ const UserProfile: React.FC = observer(() => {
 
             {isCurrentUser && (
                 <div>
-                    <button onClick={() => userState.logout()}>Log Out</button>
-                    <button onClick={handleLogout}>Go to Home</button>
+                    <button onClick={handleLogout}>Log Out</button>
+                    <button onClick={() => navigate('/')}>Go to Home</button>
                     <div>
                         <h1>Add a New Book</h1>
                         <BookSearch />
                     </div>
                 </div>
             )}
+            <BookList books={userState.user?.availableBooks} />
         </div>
     )
 })

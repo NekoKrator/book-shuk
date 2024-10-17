@@ -1,25 +1,35 @@
 import { makeAutoObservable } from 'mobx'
 
 class AuthState {
-    user: { username: string; token: string } | null = null
+    token: string | null = null
+    username: string | null = null
 
     constructor() {
         makeAutoObservable(this)
-        this.loadUserFromLocalStorage()
+        this.loadFromLocalStorage()
     }
 
     login(credentials: { token: string; username: string }) {
         localStorage.setItem('token', credentials.token)
         localStorage.setItem('username', credentials.username)
-        this.user = { username: credentials.username, token: credentials.token }
+        this.token = credentials.token
+        this.username = credentials.username
     }
 
-    private loadUserFromLocalStorage() {
-        const token = localStorage.getItem('token')
-        const username = localStorage.getItem('username')
-        if (token && username) {
-            this.user = { username, token }
-        }
+    private loadFromLocalStorage() {
+        this.token = localStorage.getItem('token')
+        this.username = localStorage.getItem('username')
+    }
+
+    logout() {
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        this.token = null
+        this.username = null
+    }
+
+    isAuthenticated() {
+        return !!this.token
     }
 }
 

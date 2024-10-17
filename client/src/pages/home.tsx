@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react'
-import { authState } from '../context/auth-context'
+import { userState } from '../context/user-context'
 import { useNavigate } from 'react-router-dom'
 
 const Home: React.FC = observer(() => {
-    const user = authState.user
+    const user = userState.loggedInUser
     const navigate = useNavigate()
 
     return (

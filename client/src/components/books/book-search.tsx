@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { observer } from 'mobx-react-lite'
-import { userState } from '../../context/user-context' // Adjust the path accordingly
+import { userState } from '../../context/user-context'
 
 interface VolumeInfo {
     title: string
@@ -19,33 +19,13 @@ const BookSearch: React.FC = observer(() => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
-    const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const inputQuery = e.target.value
-        setQuery(inputQuery)
-
-        if (inputQuery.length === 0) {
-            setBooks([])
-            setError('')
-            return
-        }
-
-        setLoading(true)
-        setError('')
-
+    const fetchBooks = async (inputQuery: string) => {
         try {
-            const response = await axios.get(`http://localhost:3000/books/search`, {
-                params: { query: inputQuery },
-            })
-
-            if (Array.isArray(response.data)) {
-                setBooks(response.data)
-            } else {
-                console.error('Unexpected response format:', response.data)
-                setBooks([])
-                setError('Unexpected response format')
-            }
-        } catch (error) {
-            console.error('Error fetching books:', error)
+            const { data } = await axios.get('http://localhost:3000/books/search', { params: { query: inputQuery } })
+            setBooks(Array.isArray(data) ? data : [])
+            if (!Array.isArray(data)) setError('Unexpected response format')
+        } catch (err) {
+            console.error('Error fetching books:', err)
             setError('Error fetching books')
             setBooks([])
         } finally {
@@ -53,33 +33,37 @@ const BookSearch: React.FC = observer(() => {
         }
     }
 
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputQuery = e.target.value
+        setQuery(inputQuery)
+        setError('')
+
+        if (inputQuery.trim() === '') {
+            setBooks([])
+            return
+        }
+
+        setLoading(true)
+        fetchBooks(inputQuery)
+    }
+
     const addBookToUser = async (book: Book) => {
+        if (!userState.loggedInUser) {
+            alert('You need to be logged in to add a book.')
+            return
+        }
+
         const { id, volumeInfo } = book
         const { title, authors } = volumeInfo
 
-        console.log('Logged In User:', userState.loggedInUser)
-        if (!userState.loggedInUser) {
-            alert('You need to be logged in to add a book.')
-            return
-        }
-
-        if (!userState.loggedInUser) {
-            alert('You need to be logged in to add a book.')
-            return
-        }
-
         try {
-            const response = await axios.post(`http://localhost:3000/books/add`, {
-                bookId: id, // Send only the Google Books API ID
-                username: userState.loggedInUser.username, // Send the logged-in user's username
-                title: title,
-                author: authors ? authors.join(', ') : 'Unknown Author',
+            const response = await axios.post('http://localhost:3000/books/add', {
+                googleBookId: id,
+                username: userState.loggedInUser.username,
+                title,
+                author: authors?.join(', ') || 'Unknown Author',
             })
-            if (response.data.success) {
-                alert('The book has been added to your library!')
-            } else {
-                alert('Error adding book')
-            }
+            alert(response.data.success ? 'The book has been added to your library!' : 'Error adding book')
         } catch (err) {
             console.error('Error adding book:', err)
         }
@@ -90,11 +74,11 @@ const BookSearch: React.FC = observer(() => {
             <input type="text" value={query} onChange={handleSearch} placeholder="Search for books" />
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
-            {books.length === 0 && !loading && query.length > 0 && <p>Books not found</p>}
+            {!loading && !books.length && query && <p>No books found</p>}
             <ul>
                 {books.map((book) => (
                     <li key={book.id}>
-                        {book.volumeInfo.title} - {book.volumeInfo.authors?.join(', ')}
+                        {book.volumeInfo.title} - {book.volumeInfo.authors?.join(', ') || 'Unknown Author'}
                         <button onClick={() => addBookToUser(book)}>Add book!</button>
                     </li>
                 ))}

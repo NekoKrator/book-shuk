@@ -1,11 +1,11 @@
 const axios = require('axios')
 const { User } = require('../models/user-model')
+const { Book } = require('../models/book-model')
 require('dotenv').config()
 
 class BookController {
     async searchBook(req, res, next) {
         const { query } = req.query
-        console.log('Search Query:', query)
 
         try {
             const response = await axios.get('https://www.googleapis.com/books/v1/volumes', {
@@ -34,23 +34,28 @@ class BookController {
     }
 
     async addBook(req, res, next) {
-        const { bookId, username, title, author } = req.body // Get book details from the request body
-
-        // Find the user by username
-        const user = await User.findOne({ username })
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' })
-        }
-
-        // Now, add the bookId and book details to the user's availableBooks array
-        user.availableBooks.push({ id: bookId, title, author }) // Store book details
+        const { googleBookId, title, author, username } = req.body
 
         try {
-            await user.save() // Save the updated user document
-            res.json({ success: true })
+            console.log('Request Body:', req.body)
+            const user = await User.findOne({ username })
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' })
+            }
+
+            let book = await Book.findOne({ googleBookId })
+            if (!book) {
+                book = new Book({ googleBookId, title, author })
+                await book.save()
+            }
+
+            user.availableBooks.push(book._id)
+            await user.save()
+
+            res.json({ success: true, message: 'Book added to user library' })
         } catch (error) {
-            console.error('Error saving user:', error)
-            res.status(500).json({ message: 'Internal server error' })
+            console.error('Error adding book to user:', error)
+            next(error)
         }
     }
 }

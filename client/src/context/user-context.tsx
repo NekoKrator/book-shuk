@@ -1,48 +1,71 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { jwtDecode } from 'jwt-decode'
+import axios from 'axios'
+
+interface DecodedToken {
+    username: string
+}
 
 class UserState {
-    users: Array<{ username: string; email: string }> = []
-    loading: boolean = false
+    loading = false
     error: string | null = null
-    user: { username: string; email: string } | null = null
+    user: { username: string; email: string; availableBooks: { _id: string; title: string; author: string }[] } | null = null
     loggedInUser: { username: string; email: string } | null = null
+    availableBooks: { _id: string; title: string; author: string }[] = []
 
     constructor() {
         makeAutoObservable(this)
+        this.loadUserFromToken()
     }
 
-    async fetchUserByUsername(username: string) {
+    private async loadUserFromToken() {
+        const token = localStorage.getItem('token')
+        if (!token) return
+
+        try {
+            const decodedToken = jwtDecode<DecodedToken>(token)
+            await this.loadUser(decodedToken.username)
+        } catch (error) {
+            console.error('Error decoding token', error)
+        }
+    }
+
+    async loadUser(username: string) {
         this.loading = true
         this.error = null
 
         try {
-            const response = await fetch(`http://localhost:3000/users/${username}`)
-            if (!response.ok) {
-                throw new Error('Не вдалося завантажити користувача')
-            }
-            const data = await response.json()
-
+            const response = await axios.get(`http://localhost:3000/users/${username}`)
             runInAction(() => {
-                this.user = data
+                this.user = response.data
+                this.availableBooks = response.data.availableBooks || []
+                this.loggedInUser = { username: response.data.username, email: response.data.email }
+                this.loading = false
             })
         } catch (error) {
-            console.error(error)
             runInAction(() => {
                 this.error = (error as Error).message
-            })
-        } finally {
-            runInAction(() => {
                 this.loading = false
             })
         }
     }
 
-    logout() {
-        localStorage.removeItem('token')
-        localStorage.removeItem('username')
+    async addBook(book: { title: string; author: string }) {
+        try {
+            const response = await axios.post(`http://localhost:3000/books`, book)
+            runInAction(() => {
+                this.availableBooks.push(response.data)
+                if (this.user) {
+                    this.user.availableBooks.push(response.data)
+                }
+            })
+        } catch (error) {
+            console.error('Error adding book:', error)
+        }
+    }
 
-        this.loggedInUser = null
-        this.user = null
+    isCurrentUser(username: string) {
+        return this.loggedInUser?.username === username
     }
 }
 
