@@ -4,13 +4,17 @@ import { observer } from 'mobx-react-lite'
 import { userState } from '../../context/user-context'
 
 interface VolumeInfo {
-    title: string
+    title?: string
     authors?: string[]
+    imageLinks?: {
+        smallThumbnail?: string
+        thumbnail?: string
+    }
 }
 
 interface Book {
     id: string
-    volumeInfo: VolumeInfo
+    volumeInfo?: VolumeInfo
 }
 
 const BookSearch: React.FC = observer(() => {
@@ -54,14 +58,23 @@ const BookSearch: React.FC = observer(() => {
         }
 
         const { id, volumeInfo } = book
-        const { title, authors } = volumeInfo
+        if (!volumeInfo) {
+            alert('Invalid book data.')
+            return
+        }
+
+        const { title, authors, imageLinks } = volumeInfo
+        const smallImageUrl = imageLinks?.smallThumbnail || ''
+        const largeImageUrl = imageLinks?.thumbnail || ''
 
         try {
             const response = await axios.post('http://localhost:3000/books/add', {
                 googleBookId: id,
                 username: userState.loggedInUser.username,
-                title,
+                title: title || 'Unknown Title',
                 author: authors?.join(', ') || 'Unknown Author',
+                smallImage: smallImageUrl,
+                largeImage: largeImageUrl,
             })
             alert(response.data.success ? 'The book has been added to your library!' : 'Error adding book')
         } catch (err) {
@@ -77,9 +90,14 @@ const BookSearch: React.FC = observer(() => {
             {!loading && !books.length && query && <p>No books found</p>}
             <ul>
                 {books.map((book) => (
-                    <li key={book.id}>
-                        {book.volumeInfo.title} - {book.volumeInfo.authors?.join(', ') || 'Unknown Author'}
-                        <button onClick={() => addBookToUser(book)}>Add book!</button>
+                    <li key={book.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                        {book.volumeInfo?.imageLinks?.smallThumbnail && <img src={book.volumeInfo.imageLinks.smallThumbnail} alt={`${book.volumeInfo.title || 'Book'} cover`} style={{ marginRight: '10px', width: '50px', height: 'auto' }} />}
+                        <div>
+                            <p>
+                                {book.volumeInfo?.title || 'Unknown Title'} - {book.volumeInfo?.authors?.join(', ') || 'Unknown Author'}
+                            </p>
+                            <button onClick={() => addBookToUser(book)}>Add book!</button>
+                        </div>
                     </li>
                 ))}
             </ul>

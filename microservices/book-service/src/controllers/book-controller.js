@@ -16,6 +16,8 @@ class BookController {
                 },
             })
 
+            console.log(response)
+
             if (!response.data.items) {
                 console.error('No items found in response:', response.data)
                 return res.status(404).json({ message: 'No books found' })
@@ -34,10 +36,9 @@ class BookController {
     }
 
     async addBook(req, res, next) {
-        const { googleBookId, title, author, username } = req.body
+        const { googleBookId, username, title, author, smallImage, largeImage } = req.body
 
         try {
-            console.log('Request Body:', req.body)
             const user = await User.findOne({ username })
             if (!user) {
                 return res.status(404).json({ message: 'User not found' })
@@ -45,8 +46,10 @@ class BookController {
 
             let book = await Book.findOne({ googleBookId })
             if (!book) {
-                book = new Book({ googleBookId, title, author })
+                book = new Book({ googleBookId, title, author, smallImage, largeImage })
                 await book.save()
+            } else {
+                console.log('Book already exists:', book)
             }
 
             user.availableBooks.push(book._id)

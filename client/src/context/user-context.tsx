@@ -24,9 +24,20 @@ class UserState {
 
         try {
             const decodedToken = jwtDecode<DecodedToken>(token)
-            await this.loadUser(decodedToken.username)
+            await this.loadLoggedInUser(decodedToken.username)
         } catch (error) {
             console.error('Error decoding token', error)
+        }
+    }
+
+    async loadLoggedInUser(username: string) {
+        try {
+            const response = await axios.get(`http://localhost:3000/users/${username}`)
+            runInAction(() => {
+                this.loggedInUser = { username: response.data.username, email: response.data.email }
+            })
+        } catch (error) {
+            console.error('Error loading logged in user', error)
         }
     }
 
@@ -39,7 +50,6 @@ class UserState {
             runInAction(() => {
                 this.user = response.data
                 this.availableBooks = response.data.availableBooks || []
-                this.loggedInUser = { username: response.data.username, email: response.data.email }
                 this.loading = false
             })
         } catch (error) {

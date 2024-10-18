@@ -5,9 +5,10 @@ const BookSchema = new mongoose.Schema(
         googleBookId: { type: String, required: true },
         title: { type: String, required: true },
         author: { type: String, required: true },
-        cover: { type: String },
-        year: { type: Number },
-        language: { type: String },
+        smallImage: { type: String, required: true }, // Убедитесь, что это поле присутствует
+        largeImage: { type: String, required: true }, // И это поле тоже
+        // year: { type: Number },
+        // language: { type: String },
     },
     { timestamps: true }
 )

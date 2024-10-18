@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import { userState } from '../context/user-context'
-import { authState } from '../context/auth-context'
 import { useParams, useNavigate } from 'react-router-dom'
 import BookSearch from '../components/books/book-search'
 import BookList from '../components/books/book-list'
@@ -9,17 +8,7 @@ import BookList from '../components/books/book-list'
 const UserProfile: React.FC = observer(() => {
     const navigate = useNavigate()
     const { username } = useParams<{ username: string }>()
-    const loggedInUser = userState.loggedInUser
-    const isCurrentUser = loggedInUser?.username === username
-
-    const handleLogout = () => {
-        authState.logout()
-        navigate('/login')
-    }
-
-    useEffect(() => {
-        console.log(userState.user)
-    })
+    const isCurrentUser = userState.loggedInUser?.username === username
 
     useEffect(() => {
         if (username) {
@@ -43,18 +32,25 @@ const UserProfile: React.FC = observer(() => {
         <div>
             <h1>{userState.user.username}</h1>
             <p>Email: {userState.user.email}</p>
+            <button onClick={() => navigate('/')}>Home Page</button>
 
             {isCurrentUser && (
                 <div>
-                    <button onClick={handleLogout}>Log Out</button>
-                    <button onClick={() => navigate('/')}>Go to Home</button>
+                    <button
+                        onClick={() => {
+                            userState.loggedInUser = null
+                            navigate('/login')
+                        }}
+                    >
+                        Log Out
+                    </button>
                     <div>
                         <h1>Add a New Book</h1>
                         <BookSearch />
                     </div>
                 </div>
             )}
-            <BookList books={userState.user?.availableBooks} />
+            <BookList books={userState.availableBooks} />
         </div>
     )
 })
