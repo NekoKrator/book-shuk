@@ -5,10 +5,16 @@ const BookSchema = new mongoose.Schema(
         googleBookId: { type: String, required: true },
         title: { type: String, required: true },
         author: { type: String, required: true },
-        smallImage: { type: String, required: true }, // Убедитесь, что это поле присутствует
-        largeImage: { type: String, required: true }, // И это поле тоже
-        // year: { type: Number },
-        // language: { type: String },
+        publisher: { type: String, required: true },
+        publishedDate: { type: Date },
+        description: { type: String },
+        pageCount: { type: Number },
+        language: { type: String },
+        tags: { type: [String] },
+        rating: { type: Number },
+        smallImage: { type: String, required: true },
+        largeImage: { type: String, required: true },
+        users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     },
     { timestamps: true }
 )

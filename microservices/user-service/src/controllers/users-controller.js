@@ -19,6 +19,16 @@ class UserController {
             next(error)
         }
     }
+
+    async getAllUsers(req, res, next) {
+        try {
+            const users = await User.find().select('username email')
+            res.json(users)
+        } catch (error) {
+            console.error('Error fetching users:', error)
+            next(error)
+        }
+    }
 }
 
 module.exports = new UserController()

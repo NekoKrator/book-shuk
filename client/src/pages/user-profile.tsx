@@ -29,7 +29,7 @@ const UserProfile: React.FC = observer(() => {
     }
 
     return (
-        <div>
+        <div className="mt-20">
             <h1>{userState.user.username}</h1>
             <p>Email: {userState.user.email}</p>
             <button onClick={() => navigate('/')}>Home Page</button>

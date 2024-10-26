@@ -6,5 +6,6 @@ const router = express.Router()
 
 router.get('/search', BookController.searchBook)
 router.post('/add', bookController.addBook)
+router.get('/get', BookController.getAllBooks)
 
 module.exports = router

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useParams } from 'react-router-dom'
 import { userState } from '../../context/user-context'
@@ -22,17 +22,6 @@ const BookList: React.FC<BookListProps> = observer(({ books }) => {
     const { username } = useParams<{ username: string }>()
     const isCurrentUser = userState.isCurrentUser(username || '')
 
-    useEffect(() => {
-        console.log('Books received:', books)
-        books.forEach((book) => {
-            if (book.smallImage) {
-                console.log('Book image links:', book.smallImage)
-            } else {
-                console.log(`No image links available for book: ${book.title}`)
-            }
-        })
-    }, [books])
-
     if (books.length === 0) {
         return <p>No available books found.</p>
     }
@@ -42,7 +31,6 @@ const BookList: React.FC<BookListProps> = observer(({ books }) => {
     }
 
     const handleExchange = (bookId: string) => {
-        // Логика для начала обмена книгой
         console.log(`Request to exchange book with ID: ${bookId}`)
     }
 
