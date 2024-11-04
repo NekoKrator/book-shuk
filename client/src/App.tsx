@@ -3,6 +3,7 @@ import Login from './pages/login'
 import Home from './pages/home'
 import Register from './pages/register'
 import UserProfile from './pages/user-profile'
+import SearchPage from './pages/search'
 
 import Header from './components/header'
 
@@ -15,6 +16,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/users/:username" element={<UserProfile />} />
+                <Route path="/search" element={<SearchPage />} />
             </Routes>
         </>
     )

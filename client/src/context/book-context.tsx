@@ -54,7 +54,13 @@ class BookState {
             return acc
         }, {} as Record<string, number>)
 
-        return Object.keys(genreCount).reduce((maxGenre, genre) => (genreCount[genre] > (genreCount[maxGenre] || 0) ? genre : maxGenre), '')
+        const mostPopular = Object.keys(genreCount).reduce((maxGenre, genre) => (genreCount[genre] > (genreCount[maxGenre] || 0) ? genre : maxGenre), '')
+
+        const count = genreCount[mostPopular] || 0
+        const totalBooks = this.allBooks.length
+        const percentage = totalBooks > 0 ? ((count / totalBooks) * 100).toFixed(2) : '0.00'
+
+        return { genre: mostPopular, count, percentage }
     }
 }
 
