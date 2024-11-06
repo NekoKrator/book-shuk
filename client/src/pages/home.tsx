@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { observer } from 'mobx-react'
-import { userState } from '../context/user-context'
-import { authState } from '../context/auth-context'
-import { bookState } from '../context/book-context'
+import { userState } from '@/context/user-context'
+import { authState } from '@/context/auth-context'
+import { bookState } from '@/context/book-context'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import BookDialog from '@/components/book-dialog'
-import { BookTypes } from '../types/types'
-import SearchBlock from '../components/search-block'
+import { BookTypes } from '@/types/types'
+import SearchBlock from '@/components/hero-page/search-block'
+import { SquarePlus } from 'lucide-react'
 
 const Home: React.FC = observer(() => {
     const username = authState.username
@@ -109,15 +110,22 @@ const Home: React.FC = observer(() => {
                                     return (
                                         <div
                                             key={book.googleBookId || book._id}
-                                            className="flex items-start mb-2 bg-white text-[#122a5b] hover:bg-[#f9bc52] transition-colors duration-300 rounded-[10px]"
+                                            className="relative flex items-start mb-2 bg-white text-[#122a5b] hover:bg-[#f9bc52] transition-colors duration-300 rounded-[10px]"
                                             onClick={() => handleBookClick(book)}
                                             style={{ cursor: 'pointer' }}
                                         >
                                             <img src={book.smallImage || '/default-image.jpg'} alt={`${book.title} cover`} className="w-12 h-20 mr-2 object-cover rounded-l-[10px]" />
-                                            <div>
-                                                <div className="font-semibold">{book.title}</div>
-                                                <div className="text-sm">{book.author}</div>
-                                                <div className="text-sm mt-3">{book.createdAt ? formatLocal.format(new Date(book.createdAt as string)) : 'Date not available'}</div>
+                                            <div className="flex flex-col justify-between">
+                                                <div>
+                                                    <div className="font-semibold">{book.title}</div>
+                                                    <div className="text-sm">{book.author}</div>
+                                                    <div className="text-sm mt-3">{book.createdAt ? formatLocal.format(new Date(book.createdAt as string)) : 'Date not available'}</div>
+                                                </div>
+                                            </div>
+                                            <div className="absolute bottom-4 right-4">
+                                                <button className="p-2 rounded-full hover:text-blue-500 hover:bg-gray-200 transition-colors duration-300" onClick={() => {}} aria-label="Add Book">
+                                                    <SquarePlus size={24} />
+                                                </button>
                                             </div>
                                         </div>
                                     )

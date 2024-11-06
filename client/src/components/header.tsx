@@ -14,7 +14,7 @@ const Header = observer(() => {
     ]
 
     return (
-        <header className="bg-[#122a5b] text-[#edeece] p-4 fixed top-0 left-0 w-full z-9 shadow-lg">
+        <header className="bg-[#122a5b] text-[#edeece] p-4 fixed top-0 left-0 w-full z-9999 shadow-lg">
             <div className="container mx-auto flex items-center justify-between">
                 <Link to={'/'}>
                     <div className="text-2xl font-bold relative group">

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BookPlus, Repeat } from 'lucide-react'
+import { BookPlus, Repeat, Search } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 
@@ -38,10 +38,11 @@ export default function SearchBlock() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder={`${searchMode === 'add' ? 'Add' : 'Exchange'} a book...`}
-                            className="flex-grow px-4 py-3 rounded-lg border-2 border-[#122a5b] focus:outline-none focus:ring-2 focus:ring-[#f9bc52] bg-white"
+                            className="flex-grow px-4 py-3 rounded-[10px] border-2 border-[#122a5b] focus:outline-none focus:ring-2 focus:ring-[#f9bc52] bg-white"
                         />
-                        <motion.button type="submit" className="ml-2 px-6 py-3 bg-[#122a5b] text-white rounded-lg hover:bg-opacity-90 transition-colors" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                            Search
+                        <motion.button type="submit" className="ml-2 px-6 py-3 flex items-center gap-2 bg-[#122a5b] text-white rounded-[10px] hover:bg-opacity-90 transition-colors" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <span>Search</span>
+                            <Search className="w-5 h-5" />
                         </motion.button>
                     </div>
 

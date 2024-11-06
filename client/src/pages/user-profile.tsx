@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import { userState } from '../context/user-context'
 import { useParams, useNavigate } from 'react-router-dom'
-import BookSearch from '../components/books/book-search'
+// import BookSearch from '../components/books/book-search'
 import BookList from '../components/books/book-list'
 
 const UserProfile: React.FC = observer(() => {
@@ -44,10 +44,10 @@ const UserProfile: React.FC = observer(() => {
                     >
                         Log Out
                     </button>
-                    <div>
+                    {/* <div>
                         <h1>Add a New Book</h1>
                         <BookSearch />
-                    </div>
+                    </div> */}
                 </div>
             )}
             <BookList books={userState.availableBooks} />
